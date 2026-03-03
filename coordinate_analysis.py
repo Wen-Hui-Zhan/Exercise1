@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-# 嘗試不同編碼碼讀取CSV檔案
+# 嘗試不同編碼讀取CSV檔案
 encodings_to_try = ['utf-8', 'big5', 'gbk', 'cp950', 'latin1']
 
 for encoding in encodings_to_try:
@@ -18,14 +18,14 @@ else:
     print("使用 UTF-8 編碼並忽略錯誤讀取檔案")
 
 # 分析經緯度座標
-print("=== 座標資料分析報告 ===")
+print("=== Exercise1 座標資料分析報告 ===")
 print(f"總資料筆數: {len(df)}")
-print(f"經度欄位名稱: {df.columns[4]} ({df.columns[4] in df.columns})")
-print(f"緯度欄位名稱: {df.columns[5]} ({df.columns[5] in df.columns})")
+print(f"欄位數量: {len(df.columns)}")
+print(f"欄位名稱: {list(df.columns)}")
 
 # 檢查經緯度資料
-longitude_col = df.columns[4]  # 經度
-latitude_col = df.columns[5]   # 緯度
+longitude_col = '經度'  # 經度
+latitude_col = '緯度'   # 緯度
 
 # 基本統計
 print(f"\n=== 經度 (Longitude) 分析 ===")
@@ -83,17 +83,23 @@ coordinates = df[df[longitude_col].notna() & df[latitude_col].notna()]
 duplicates = coordinates[coordinates.duplicated(subset=[longitude_col, latitude_col], keep=False)]
 print(f"重複座標筆數: {len(duplicates)}")
 
-# 儲存詳細分析結果
-analysis_results = {
-    'total_records': len(df),
-    'longitude_missing': df[longitude_col].isna().sum(),
-    'latitude_missing': df[latitude_col].isna().sum(),
-    'invalid_longitude': len(invalid_longitude),
-    'invalid_latitude': len(invalid_latitude),
-    'duplicate_coordinates': len(duplicates),
-    'longitude_decimal_places': longitude_decimals.value_counts().to_dict(),
-    'latitude_decimal_places': latitude_decimals.value_counts().to_dict()
-}
+# 檢查地址資料完整性
+print(f"\n=== 地址資料完整性檢查 ===")
+address_col = '避難收容處所地址'
+print(f"地址空值筆數: {df[address_col].isna().sum()}")
+print(f"地址為空字串筆數: {(df[address_col] == '').sum()}")
+
+# 檢查村里資料
+village_col = '村里'
+print(f"村里空值筆數: {df[village_col].isna().sum()}")
+print(f"村里為空字串筆數: {(df[village_col] == '').sum()}")
+
+# 檢查收容人數資料
+capacity_col = '預計收容人數'
+print(f"收容人數空值筆數: {df[capacity_col].isna().sum()}")
+if df[capacity_col].notna().sum() > 0:
+    print(f"收容人數最小值: {df[capacity_col].min()}")
+    print(f"收容人數最大值: {df[capacity_col].max()}")
+    print(f"收容人數為0的筆數: {(df[capacity_col] == 0).sum()}")
 
 print(f"\n=== 分析完成 ===")
-print("詳細結果已儲存至 analysis_results 變數")
